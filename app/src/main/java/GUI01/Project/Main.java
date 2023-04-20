@@ -32,9 +32,7 @@ import javax.swing.SwingConstants;
 
 
 public class Main extends javax.swing.JFrame {
-    
-    public static HashMap<String, User> userLogin = new HashMap<>();
-    
+
     public static User authenticatedUser = null;
 
     /**
