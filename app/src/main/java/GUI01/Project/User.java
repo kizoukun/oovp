@@ -51,4 +51,9 @@ public class User {
     public String getHashedPassword() {
         return this.hashedPassword;
     }
+
+    @Override
+    public String toString() {
+        return getGender().equalsIgnoreCase("m") ? "Mr. " + getFullName() : "Ms. " + getFullName();
+    }
 }

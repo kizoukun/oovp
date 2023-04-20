@@ -177,7 +177,7 @@ public class Main extends javax.swing.JFrame {
             totalPrice += checkout.getPrice();
         } 
         System.out.println("Total Price: " + totalPrice);
-        System.out.println("Hello mr. " + authenticatedUser.getFullName());
+        System.out.println("Hello " + authenticatedUser);
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void loginFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginFormActionPerformed
@@ -190,11 +190,12 @@ public class Main extends javax.swing.JFrame {
 
     private void logoutMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutMenuActionPerformed
         // TODO add your handling code here:
-        int answer = JOptionPane.showConfirmDialog(this, "Are you sure to logout?", "Logout", JOptionPane.OK_CANCEL_OPTION);
-        if(answer != JOptionPane.YES_OPTION) {
-            return;
-        }
+
         if(authenticatedUser != null) {
+            int answer = JOptionPane.showConfirmDialog(this, "Are you sure to logout?", "Logout", JOptionPane.OK_CANCEL_OPTION);
+            if(answer != JOptionPane.YES_OPTION) {
+                return;
+            }
             Main.authenticatedUser = null;
             Alert.showMessageSuccess(this, "Successfully logged out");
         } else {
