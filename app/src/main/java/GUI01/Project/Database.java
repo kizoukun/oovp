@@ -54,7 +54,7 @@ public class Database {
     }
     
     public static boolean isUserExists(String email) {
-        return Database.getUser(email) != null;
+        return Database.getUser(email).isPresent();
     }
     
     public static void createUser(String email, String firstName, String lastName, String password, String gender) throws SQLException {
