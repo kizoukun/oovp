@@ -236,13 +236,15 @@ public class Main extends javax.swing.JFrame {
             }
             i++;
         };
-        if(paymentType.equalsIgnoreCase("balance")) {
-            authenticatedUser.takeBalance(money - totalPrice, "Purchasing games " + gamesTitles);
-        }
+
         checkOutList.clear();
         this.reloadBuyGame();
-
-        Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your change is Rp. " + Utils.formatNumber(money - totalPrice) + "");
+        if(paymentType.equalsIgnoreCase("balance")) {
+            authenticatedUser.takeBalance(money - totalPrice, "Purchasing games " + gamesTitles);
+            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your balance is Rp. " + Utils.formatNumber(authenticatedUser.getBalance()));
+        } else {
+            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your change is Rp. " + Utils.formatNumber(money - totalPrice));
+        }
     }//GEN-LAST:event_checkoutBtnActionPerformed
 
     private void loginFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginFormActionPerformed
