@@ -1,15 +1,14 @@
 package GUI01.Project.Authentication;
 
-import GUI01.Project.Alert;
-import GUI01.Project.Database;
-import GUI01.Project.Main;
-import GUI01.Project.User;
-import GUI01.Project.Utils;
+import GUI01.Project.*;
+
 import java.beans.PropertyVetoException;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.text.html.Option;
 
 /**
  *
@@ -106,8 +105,13 @@ public class Login extends javax.swing.JInternalFrame {
         String email = emailText.getText();
         String password = passwordText.getText();
         if(email.length() < 1 || password.length() < 1) {
-            Alert.showMessageError(this, "Invalid form, please fill all the forms");
-            return;
+            if(Main.DEBUG) {
+                email = "yudhistira.achmadarel@student.president.ac.id";
+                password = "12345678";
+            } else {
+                Alert.showMessageError(this, "Invalid form, please fill all the forms");
+                return;
+            }
         }
         
         Optional<User> user = Database.getUser(email);
@@ -124,6 +128,8 @@ public class Login extends javax.swing.JInternalFrame {
         
         JOptionPane.showConfirmDialog(this, "Successfully login", "Success", JOptionPane.OK_OPTION);
         Main.authenticatedUser = user.get();
+        Optional<List<GameObject>> userGames = Database.getOwnedGames(user.get().getId());
+        userGames.ifPresent(gameObjects -> Main.authenticatedUser.setGames(gameObjects));
         try {
             this.setClosed(true);
         } catch (PropertyVetoException ex) {

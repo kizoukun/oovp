@@ -10,8 +10,10 @@ import GUI01.Project.Authentication.Register;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -31,6 +33,7 @@ import javax.swing.SwingConstants;
 public class Main extends javax.swing.JFrame {
 
     public static User authenticatedUser = null;
+    public static boolean DEBUG = true;
 
     /**
      * Creates new form Main
@@ -51,7 +54,7 @@ public class Main extends javax.swing.JFrame {
     private void initComponents() {
 
         desktopPane = new javax.swing.JPanel();
-        jButton7 = new javax.swing.JButton();
+        checkoutBtn = new javax.swing.JButton();
         listGamePane = new javax.swing.JPanel();
         purchasedGamePane = new javax.swing.JPanel();
         paymentBox = new javax.swing.JComboBox<>();
@@ -65,10 +68,10 @@ public class Main extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton7.setText("Checkout");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
+        checkoutBtn.setText("Checkout");
+        checkoutBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
+                checkoutBtnActionPerformed(evt);
             }
         });
 
@@ -85,7 +88,7 @@ public class Main extends javax.swing.JFrame {
 
         purchasedGamePane.setLayout(new java.awt.GridLayout(1, 0));
 
-        paymentBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cash", "QRIS", "BCA" }));
+        paymentBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cash", "Balance", "QRIS", "BCA" }));
         paymentBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 paymentBoxActionPerformed(evt);
@@ -102,7 +105,7 @@ public class Main extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(desktopPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(paymentBox, 0, 116, Short.MAX_VALUE)
-                    .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
+                    .addComponent(checkoutBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
                     .addComponent(purchasedGamePane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(19, 19, 19))
         );
@@ -116,7 +119,7 @@ public class Main extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paymentBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(14, 14, 14)
-                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(checkoutBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(180, 180, 180))
         );
 
@@ -182,7 +185,7 @@ public class Main extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+    private void checkoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkoutBtnActionPerformed
         // TODO add your handling code here:
         if(authenticatedUser == null) {
             Alert.showMessageError(this, "Please login first to purchase!");
@@ -193,25 +196,42 @@ public class Main extends javax.swing.JFrame {
             return;
         }
 
-        if(paymentBox.getSelectedIndex() != 0) {
-            Alert.showMessageError(this, "Only cash is available at this time!");
-            return;
-        }
+
 
         double totalPrice = 0;
         for(GameObject checkout : checkOutList) {
             totalPrice += checkout.getPrice();
         }
 
-        Optional<String> moneyInput = Optional.ofNullable(JOptionPane.showInputDialog(this, "Place your money here", "Cash", JOptionPane.INFORMATION_MESSAGE));
-        String moneyString = moneyInput.filter(s -> s.length() > 0).orElse("0");
-        int money = Integer.parseInt(moneyString);
+        String paymentType = Objects.requireNonNull(paymentBox.getSelectedItem()).toString();
+        double money = 0;
+
+        if(paymentType.equalsIgnoreCase("cash")) {
+            Optional<String> moneyInput = Optional.ofNullable(JOptionPane.showInputDialog(this, "Place your money here", "Cash", JOptionPane.INFORMATION_MESSAGE));
+            String moneyString = moneyInput.filter(s -> s.length() > 0).orElse("0");
+            money = Double.parseDouble(moneyString);
+        } else if(paymentType.equalsIgnoreCase("balance")) {
+            money = authenticatedUser.getBalance();
+        } else {
+            Alert.showMessageError(this, "Selected payment is not available at this time! sorry :(");
+            return;
+        }
         if(money < totalPrice) {
             Alert.showMessageError(this, "Your money is not enough!");
             return;
         }
+        for(GameObject game : checkOutList) {
+            try {
+                Database.addOwnedGame(authenticatedUser.getId(), game.getId());
+                authenticatedUser.addGames(game);
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        checkOutList.clear();
+        this.reloadBuyGame();
         Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your change is Rp. " + Utils.formatNumber(money - totalPrice) + "");
-    }//GEN-LAST:event_jButton7ActionPerformed
+    }//GEN-LAST:event_checkoutBtnActionPerformed
 
     private void loginFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginFormActionPerformed
         // TODO add your handling code here:
@@ -265,7 +285,6 @@ public class Main extends javax.swing.JFrame {
             games = fetchGames.get();
         }
         for(GameObject game : games) {
-            
             JButton gameBtn = new JButton();
             gameBtn.setLayout(new BoxLayout(gameBtn, BoxLayout.Y_AXIS));
             gameBtn.add(Box.createVerticalGlue());
@@ -284,6 +303,15 @@ public class Main extends javax.swing.JFrame {
     }
     
     public void addGame(GameObject game) {
+        if(authenticatedUser == null) {
+            Alert.showMessageError(this, "You have to login to add cart");
+            return;
+        }
+        boolean isGameOwned = authenticatedUser.getGames().stream().anyMatch(uGame -> uGame.getId() == game.getId());
+        if(isGameOwned) {
+            Alert.showMessageError(this, "You already owned this game!");
+            return;
+        }
         if(!checkOutList.contains(game)) {
             checkOutList.add(game);
         } else {
@@ -353,8 +381,8 @@ public class Main extends javax.swing.JFrame {
     
     private final ArrayList<GameObject> checkOutList = new ArrayList<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton checkoutBtn;
     private javax.swing.JPanel desktopPane;
-    private javax.swing.JButton jButton7;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;

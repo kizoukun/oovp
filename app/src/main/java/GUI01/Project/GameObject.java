@@ -12,34 +12,43 @@ import java.util.Date;
  */
 public class GameObject {
     private double price;
+    private final int id;
     private String title;
     private String image = null;
     private Date addedDate;
     
-    public GameObject(String title, double price) {
+    public GameObject(int id, String title, double price) {
+        this.id = id;
         this.title = title;
         this.price = price;
     }
     
-    public GameObject(String title, double price, String image) {
+    public GameObject(int id, String title, double price, String image) {
+        this.id = id;
         this.title = title;
         this.price = price;
         this.image = image;
     }
 
-    public GameObject(String title, double price, String image, Date date) {
+    public GameObject(int id, String title, double price, String image, Date date) {
+        this.id = id;
         this.title = title;
         this.price = price;
         this.image = image;
         this.addedDate = date;
     }
 
-    public GameObject(String title, double price, Date date) {
+    public GameObject(int id, String title, double price, Date date) {
+        this.id = id;
         this.title = title;
         this.price = price;
         this.addedDate = date;
     }
-    
+
+    public int getId() {
+        return this.id;
+    }
+
     public String getTitle() {
         return this.title;
     }

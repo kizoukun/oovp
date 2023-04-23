@@ -30,5 +30,11 @@ public class Utils {
     public static String formatNumber(double number) {
         return NumberFormat.getInstance().format(number);
     }
+
+    public static void debugLog(String message) {
+        if(Main.DEBUG) {
+            System.out.println(message);
+        }
+    }
     
 }

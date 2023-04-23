@@ -4,28 +4,36 @@
  */
 package GUI01.Project;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author rezab
  */
-public class User {
-    
+public class User extends BalanceHistories {
+
+    private final int id;
     private String email;
     private String firstName;
     private String lastName;
     private String gender;
     private String hashedPassword;
+    private List<GameObject> games;
     
-    public User(String email) {
-        this.email = email;
-    }
-    
-    public User(String email, String firstName, String lastName, String gender, String hashedPassword) {
+    public User(int id, String email, String firstName, String lastName, String gender, String hashedPassword, List<Balance> balances) {
+        super(id, balances);
+        this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
         this.hashedPassword = hashedPassword;
+        this.games = new ArrayList<>();
+    }
+
+    public int getId() {
+        return this.id;
     }
     
     public String getFirstName() {
@@ -50,6 +58,18 @@ public class User {
     
     public String getHashedPassword() {
         return this.hashedPassword;
+    }
+
+    public void setGames(List<GameObject> games) {
+        this.games = games;
+    }
+
+    public void addGames(GameObject game) {
+        this.games.add(game);
+    }
+
+    public List<GameObject> getGames() {
+        return this.games;
     }
 
     @Override
