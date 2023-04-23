@@ -6,13 +6,12 @@ package GUI01.Project;
 
 import GUI01.Project.Authentication.Login;
 import GUI01.Project.Authentication.Register;
-import java.awt.Component;
-import java.awt.Dimension;
+
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -20,9 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.Box;
-import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 /**
@@ -60,6 +57,7 @@ public class Main extends javax.swing.JFrame {
         paymentBox = new javax.swing.JComboBox<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        myGamesItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         loginForm = new javax.swing.JMenuItem();
         registerMenu = new javax.swing.JMenuItem();
@@ -104,9 +102,8 @@ public class Main extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(desktopPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(paymentBox, 0, 116, Short.MAX_VALUE)
-                    .addGroup(desktopPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
-                        .addComponent(purchasedGamePane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
+                    .addComponent(purchasedGamePane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(19, 19, 19))
         );
         desktopPaneLayout.setVerticalGroup(
@@ -123,7 +120,16 @@ public class Main extends javax.swing.JFrame {
                 .addGap(180, 180, 180))
         );
 
-        jMenu1.setText("File");
+        jMenu1.setText("Menu");
+
+        myGamesItem.setText("My Games");
+        myGamesItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myGamesItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(myGamesItem);
+
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Auth");
@@ -242,16 +248,22 @@ public class Main extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_paymentBoxActionPerformed
 
+    private void myGamesItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myGamesItemActionPerformed
+        // TODO add your handling code here:
+        if(authenticatedUser == null) {
+            Alert.showMessageError(this, "You have to login to show games");
+            return;
+        }
+        System.out.println("ok");
+    }//GEN-LAST:event_myGamesItemActionPerformed
+
     public void loadGame() {
         listGamePane.setLayout(new GridLayout(0, 3, 3, 3));
-        ArrayList<GameObject> games = new ArrayList() {
-            {
-                add(new GameObject("MINECRAFT", 5000, "C:\\Users\\rezab\\Downloads\\download.jpeg"));
-                add(new GameObject("VALORANT", 4000));
-                add(new GameObject("CSGO", 10000, "C:\\Users\\rezab\\Downloads\\csgo.jpeg"));
-                add(new GameObject("FIFA", 30000));
-            }
-        };
+        Optional<List<GameObject>> fetchGames = Database.getGames();
+        List<GameObject> games = new ArrayList<>();
+        if(fetchGames.isPresent()) {
+            games = fetchGames.get();
+        }
         for(GameObject game : games) {
             
             JButton gameBtn = new JButton();
@@ -265,7 +277,7 @@ public class Main extends javax.swing.JFrame {
             gameBtn.addActionListener((ActionEvent e) -> {
                 this.addGame(game);
             });
-            gameBtn.add(new JLabel(game.getName(), SwingConstants.CENTER));
+            gameBtn.add(new JLabel(game.getTitle(), SwingConstants.CENTER));
             gameBtn.add(new JLabel("Rp. " + Utils.formatNumber(game.getPrice()), SwingConstants.CENTER));
             listGamePane.add(gameBtn);
         }
@@ -277,17 +289,15 @@ public class Main extends javax.swing.JFrame {
         } else {
             Alert.showMessageError(this, "You already have this game added");
         }
-        this.reloadPurchasedGame();
+        this.reloadBuyGame();
     }
     
     public void removeGame(GameObject game) {
-        if(checkOutList.contains(game)) {
-            checkOutList.remove(game);
-        }
-        this.reloadPurchasedGame();
+        checkOutList.remove(game);
+        this.reloadBuyGame();
     }
     
-    public void reloadPurchasedGame() {
+    public void reloadBuyGame() {
         purchasedGamePane.removeAll();
         purchasedGamePane.setLayout(new GridLayout(5, 0, 5, 0));
         for(GameObject s : checkOutList) {
@@ -297,7 +307,7 @@ public class Main extends javax.swing.JFrame {
             });
             btn.setLayout(new BoxLayout(btn, BoxLayout.Y_AXIS));
             btn.add(Box.createVerticalGlue());
-            btn.add(new JLabel(s.getName()));
+            btn.add(new JLabel(s.getTitle()));
             
             btn.add(new JLabel("Rp. " + Utils.formatNumber(s.getPrice())));
             purchasedGamePane.add(btn);
@@ -351,6 +361,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel listGamePane;
     private javax.swing.JMenuItem loginForm;
     private javax.swing.JMenuItem logoutMenu;
+    private javax.swing.JMenuItem myGamesItem;
     private javax.swing.JComboBox<String> paymentBox;
     private javax.swing.JPanel purchasedGamePane;
     private javax.swing.JMenuItem registerMenu;

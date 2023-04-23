@@ -4,6 +4,9 @@
  */
 package GUI01.Project;
 import java.sql.*;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +43,8 @@ public class Database {
                 return null;
             }
             stmt = db.createStatement();
-            return stmt.executeQuery("SELECT * FROM users");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+            return rs;
         } catch (SQLException e) {
             return null;
         } finally {
@@ -97,6 +101,35 @@ public class Database {
             }
             
         } catch (SQLException err) {
+            return Optional.ofNullable(null);
+        }
+    }
+
+    public static Optional<List<GameObject>> getGames() {
+        try(Connection db = Database.getConnection()) {
+            if(db == null) {
+                return Optional.ofNullable(null);
+            }
+            //select query from games table
+            try (Statement stmt = db.createStatement()) {
+                try (ResultSet rs = stmt.executeQuery("SELECT * FROM games")) {
+                    List<GameObject> games = new ArrayList<>();
+                    while(rs.next()) {
+                        String title = rs.getString("title");
+                        String image = rs.getString("image_uri");
+                        double price = rs.getDouble("price");
+                        Date date = rs.getDate("added_date");
+                        GameObject game = new GameObject(title, price, date);
+                        if(image != null) {
+                            game.setImage(image);
+                        }
+                        games.add(game);
+                    }
+                    return Optional.of(games);
+                }
+            }
+        } catch(SQLException err) {
+            System.out.println(err.getMessage());
             return Optional.ofNullable(null);
         }
     }

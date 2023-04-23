@@ -4,28 +4,44 @@
  */
 package GUI01.Project;
 
+import java.util.Date;
+
 /**
  *
  * @author rezab
  */
 public class GameObject {
     private double price;
-    private String name;
+    private String title;
     private String image = null;
+    private Date addedDate;
     
-    GameObject(String name, double price) {
-        this.name = name;
+    public GameObject(String title, double price) {
+        this.title = title;
         this.price = price;
     }
     
-    GameObject(String name, double price, String image) {
-        this.name = name;
+    public GameObject(String title, double price, String image) {
+        this.title = title;
         this.price = price;
         this.image = image;
     }
+
+    public GameObject(String title, double price, String image, Date date) {
+        this.title = title;
+        this.price = price;
+        this.image = image;
+        this.addedDate = date;
+    }
+
+    public GameObject(String title, double price, Date date) {
+        this.title = title;
+        this.price = price;
+        this.addedDate = date;
+    }
     
-    public String getName() {
-        return this.name;
+    public String getTitle() {
+        return this.title;
     }
     
     public double getPrice() {
@@ -37,5 +53,9 @@ public class GameObject {
     }
     public String getImage() {
         return this.image;
+    }
+
+    public Date getAddedDate() {
+        return this.addedDate;
     }
 }
