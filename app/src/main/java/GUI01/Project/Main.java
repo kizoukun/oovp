@@ -220,16 +220,28 @@ public class Main extends javax.swing.JFrame {
             Alert.showMessageError(this, "Your money is not enough!");
             return;
         }
+        StringBuffer gamesTitles = new StringBuffer();
+        int i = 0;
         for(GameObject game : checkOutList) {
             try {
                 Database.addOwnedGame(authenticatedUser.getId(), game.getId());
+                if(i >= checkOutList.size() - 1) {
+                    gamesTitles.append(game.getTitle());
+                } else {
+                    gamesTitles.append(game.getTitle() + ", ");
+                }
                 authenticatedUser.addGames(game);
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
+            i++;
+        };
+        if(paymentType.equalsIgnoreCase("balance")) {
+            authenticatedUser.takeBalance(money - totalPrice, "Purchasing games " + gamesTitles);
         }
         checkOutList.clear();
         this.reloadBuyGame();
+
         Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your change is Rp. " + Utils.formatNumber(money - totalPrice) + "");
     }//GEN-LAST:event_checkoutBtnActionPerformed
 
