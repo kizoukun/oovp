@@ -1,6 +1,7 @@
 package GUI01.Project.Database;
 
 import GUI01.Project.GameObject;
+import GUI01.Project.Object.UserGamesObject;
 import GUI01.Project.Utils;
 
 import java.sql.*;
@@ -11,23 +12,24 @@ import java.util.Optional;
 public class GamesDatabase extends Database {
 
 
-    public Optional<List<GameObject>> getOwnedGames(int user_id) {
+    public Optional<List<UserGamesObject>> getOwnedGames(int user_id) {
         try(Connection db = this.getConn()) {
             if(db == null) {
                 return Optional.ofNullable(null);
             }
             //select query from games table
-            try (PreparedStatement ps = db.prepareStatement("SELECT * FROM games WHERE id IN (SELECT game_id FROM owned_games WHERE user_id = ?)")) {
+            try (PreparedStatement ps = db.prepareStatement("SELECT owned_games.purchase_date, games.* FROM `owned_games` JOIN games ON games.id = owned_games.game_id WHERE owned_games.user_id = ? ORDER BY owned_games.purchase_date DESC")) {
                 ps.setInt(1, user_id);
                 try (ResultSet rs = ps.executeQuery()) {
-                    List<GameObject> games = new ArrayList<>();
+                    List<UserGamesObject> games = new ArrayList<>();
                     while(rs.next()) {
                         int id = rs.getInt("id");
                         String title = rs.getString("title");
                         String image = rs.getString("image_uri");
                         double price = rs.getDouble("price");
                         Date date = rs.getDate("added_date");
-                        GameObject game = new GameObject(id, title, price, date);
+                        Date purchaseDate = rs.getDate("purchase_date");
+                        UserGamesObject game = new UserGamesObject(id, title, price, date, purchaseDate);
                         if(image != null) {
                             game.setImage(image);
                         }

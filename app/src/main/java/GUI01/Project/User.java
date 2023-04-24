@@ -4,6 +4,8 @@
  */
 package GUI01.Project;
 
+import GUI01.Project.Object.UserGamesObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +21,7 @@ public class User extends BalanceHistories {
     private String lastName;
     private String gender;
     private String hashedPassword;
-    private List<GameObject> games;
+    private List<UserGamesObject> games;
     
     public User(int id, String email, String firstName, String lastName, String gender, String hashedPassword, List<Balance> balances) {
         super(id, balances);
@@ -73,15 +75,15 @@ public class User extends BalanceHistories {
         Main.usersDb.updatePassword(hashedPassword);
     }
 
-    public void setGames(List<GameObject> games) {
+    public void setGames(List<UserGamesObject> games) {
         this.games = games;
     }
 
-    public void addGames(GameObject game) {
+    public void addGames(UserGamesObject game) {
         this.games.add(game);
     }
 
-    public List<GameObject> getGames() {
+    public List<UserGamesObject> getGames() {
         return this.games;
     }
 

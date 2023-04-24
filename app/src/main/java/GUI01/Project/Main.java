@@ -8,9 +8,11 @@ import GUI01.Project.Authentication.Login;
 import GUI01.Project.Authentication.Register;
 import GUI01.Project.Dashboard.Profile;
 import GUI01.Project.Dashboard.UserBalanceHistories;
+import GUI01.Project.Dashboard.UserGames;
 import GUI01.Project.Database.Database;
 import GUI01.Project.Database.GamesDatabase;
 import GUI01.Project.Database.UsersDatabase;
+import GUI01.Project.Object.UserGamesObject;
 
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -253,7 +255,7 @@ public class Main extends javax.swing.JFrame {
                 } else {
                     gamesTitles.append(game.getTitle() + ", ");
                 }
-                authenticatedUser.addGames(game);
+                authenticatedUser.addGames(new UserGamesObject(game));
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
@@ -262,15 +264,25 @@ public class Main extends javax.swing.JFrame {
 
         checkOutList.clear();
         this.reloadBuyGame();
+        System.out.println(totalPrice);
+        System.out.println(paymentType);
         if(paymentType.equalsIgnoreCase("balance")) {
-            authenticatedUser.takeBalance(money - totalPrice, "Purchasing games " + gamesTitles);
-            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your balance is Rp. " + Utils.formatNumber(authenticatedUser.getBalance()));
+            authenticatedUser.takeBalance(totalPrice, "Purchasing games " + gamesTitles);
+            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your balance is now Rp. " + Utils.formatNumber(authenticatedUser.getBalance()));
         } else {
-            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your change is Rp. " + Utils.formatNumber(money - totalPrice));
+            double moneyLeft = money - totalPrice;
+            if(moneyLeft > 0) {
+                authenticatedUser.addBalance(moneyLeft, "Change from purchasing games " + gamesTitles);
+            }
+            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your change is Rp. " + Utils.formatNumber(moneyLeft) + "\nChange will be automatically added to balance");
         }
     }//GEN-LAST:event_checkoutBtnActionPerformed
 
     private void loginFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginFormActionPerformed
+        if(authenticatedUser != null) {
+            Alert.showMessageError(this, "You are already logged in!");
+            return;
+        }
         Login login = new Login();
         JLayeredPane pane = getLayeredPane();
         pane.add(login, Integer.valueOf(50));
@@ -291,10 +303,6 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_logoutMenuActionPerformed
 
     private void registerMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerMenuActionPerformed
-        if(authenticatedUser != null) {
-            Alert.showMessageError(this, "You are already logged in");
-            return;
-        }
         Register register = new Register();
         JLayeredPane pane = getLayeredPane();
         pane.add(register);
@@ -309,7 +317,10 @@ public class Main extends javax.swing.JFrame {
             Alert.showMessageError(this, "You have to login to show games");
             return;
         }
-        System.out.println("ok");
+        UserGames userGames = new UserGames();
+        JLayeredPane pane = getLayeredPane();
+        pane.add(userGames);
+        userGames.setVisible(true);
     }//GEN-LAST:event_myGamesItemActionPerformed
 
     private void balanceHistoryItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_balanceHistoryItemActionPerformed

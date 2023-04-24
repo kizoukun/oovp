@@ -4,6 +4,13 @@
  */
 package GUI01.Project.Dashboard;
 
+
+import GUI01.Project.Main;
+import GUI01.Project.Object.UserGamesObject;
+import GUI01.Project.Utils;
+
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author rezab
@@ -15,6 +22,23 @@ public class UserGames extends javax.swing.JInternalFrame {
      */
     public UserGames() {
         initComponents();
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // make all cells non-editable
+            }
+        };
+        model.addColumn("Title");
+        model.addColumn("Price");
+        model.addColumn("Purchase Date");
+        for(UserGamesObject game : Main.authenticatedUser.getGames()) {
+            model.addRow(new Object[]{
+                    game.getTitle(),
+                    Utils.formatNumber(game.getPrice()),
+                    game.getPurchaseDate()
+            });
+        }
+        jTable1.setModel(model);
     }
 
     /**

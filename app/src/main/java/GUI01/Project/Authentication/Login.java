@@ -1,8 +1,7 @@
 package GUI01.Project.Authentication;
 
 import GUI01.Project.*;
-import GUI01.Project.Database.Database;
-
+import GUI01.Project.Object.UserGamesObject;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Optional;
@@ -127,7 +126,7 @@ public class Login extends javax.swing.JInternalFrame {
         
         JOptionPane.showConfirmDialog(this, "Successfully login", "Success", JOptionPane.OK_OPTION);
         Main.authenticatedUser = user.get();
-        Optional<List<GameObject>> userGames = Main.gamesDb.getOwnedGames(user.get().getId());
+        Optional<List<UserGamesObject>> userGames = Main.gamesDb.getOwnedGames(user.get().getId());
         userGames.ifPresent(gameObjects -> Main.authenticatedUser.setGames(gameObjects));
         try {
             this.setClosed(true);
