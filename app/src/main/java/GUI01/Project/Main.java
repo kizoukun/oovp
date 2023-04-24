@@ -210,7 +210,6 @@ public class Main extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void checkoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkoutBtnActionPerformed
-        // TODO add your handling code here:
         if(authenticatedUser == null) {
             Alert.showMessageError(this, "Please login first to purchase!");
             return;
@@ -272,7 +271,6 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_checkoutBtnActionPerformed
 
     private void loginFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginFormActionPerformed
-        // TODO add your handling code here:
         Login login = new Login();
         JLayeredPane pane = getLayeredPane();
         pane.add(login, Integer.valueOf(50));
@@ -280,8 +278,6 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_loginFormActionPerformed
 
     private void logoutMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutMenuActionPerformed
-        // TODO add your handling code here:
-
         if(authenticatedUser != null) {
             int answer = JOptionPane.showConfirmDialog(this, "Are you sure to logout?", "Logout", JOptionPane.OK_CANCEL_OPTION);
             if(answer != JOptionPane.YES_OPTION) {
@@ -295,7 +291,10 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_logoutMenuActionPerformed
 
     private void registerMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerMenuActionPerformed
-        // TODO add your handling code here:
+        if(authenticatedUser != null) {
+            Alert.showMessageError(this, "You are already logged in");
+            return;
+        }
         Register register = new Register();
         JLayeredPane pane = getLayeredPane();
         pane.add(register);
@@ -303,7 +302,6 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_registerMenuActionPerformed
 
     private void paymentBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentBoxActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_paymentBoxActionPerformed
 
     private void myGamesItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myGamesItemActionPerformed
