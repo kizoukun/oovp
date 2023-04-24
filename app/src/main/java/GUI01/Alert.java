@@ -96,18 +96,15 @@ public class Alert extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void helloWorldBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helloWorldBtnActionPerformed
-        // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "Hello World", "Title World", JOptionPane.PLAIN_MESSAGE);
     }//GEN-LAST:event_helloWorldBtnActionPerformed
 
     private void goodbyeWorldBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goodbyeWorldBtnActionPerformed
-        // TODO add your handling code here:
         String input = JOptionPane.showInputDialog("Please write a message before you left");
         JOptionPane.showMessageDialog(this, "Your message was: \"" + input + "\". Goodbye!", "Goodbye", JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_goodbyeWorldBtnActionPerformed
 
     private void ClickMeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClickMeBtnActionPerformed
-        // TODO add your handling code here:
         int answer = JOptionPane.showConfirmDialog(this,"Please Confirm?");
        switch(answer){
            case JOptionPane.YES_OPTION:
@@ -122,7 +119,6 @@ public class Alert extends javax.swing.JFrame {
     }//GEN-LAST:event_ClickMeBtnActionPerformed
 
     private void ExitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExitBtnActionPerformed
-        // TODO add your handling code here:
         int answer2=JOptionPane.showOptionDialog(this,"Do you want to Exit?","Exit",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
         if(answer2 == JOptionPane.YES_OPTION){
             JOptionPane.showMessageDialog(this,"Program will Exit");

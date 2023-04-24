@@ -305,7 +305,6 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_paymentBoxActionPerformed
 
     private void myGamesItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myGamesItemActionPerformed
-        // TODO add your handling code here:
         if(authenticatedUser == null) {
             Alert.showMessageError(this, "You have to login to show games");
             return;

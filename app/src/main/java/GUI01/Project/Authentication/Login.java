@@ -101,7 +101,6 @@ public class Login extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        // TODO add your handling code here:
         String email = emailText.getText();
         String password = passwordText.getText();
         if(email.length() < 1 || password.length() < 1) {

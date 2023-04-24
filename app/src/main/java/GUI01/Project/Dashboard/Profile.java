@@ -24,8 +24,10 @@ public class Profile extends javax.swing.JInternalFrame {
      */
     public Profile() {
         initComponents();
-        this.emailText.setText(Main.authenticatedUser.getEmail());
-        this.fullNameText.setText(Main.authenticatedUser.getFullName());
+        User user = Main.authenticatedUser;
+        this.emailText.setText(user.getEmail());
+        this.fullNameText.setText(user.getFullName());
+        this.balanceText.setText(Utils.formatNumber(user.getBalance()));
     }
 
     /**
@@ -46,6 +48,8 @@ public class Profile extends javax.swing.JInternalFrame {
         jLabel4 = new javax.swing.JLabel();
         passwordField = new javax.swing.JPasswordField();
         passwordEditBtn = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        balanceText = new javax.swing.JTextField();
 
         setClosable(true);
 
@@ -78,6 +82,10 @@ public class Profile extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel5.setText("Balance");
+
+        balanceText.setEditable(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -85,6 +93,7 @@ public class Profile extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -95,10 +104,11 @@ public class Profile extends javax.swing.JInternalFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(42, 42, 42)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(balanceText)
                             .addComponent(passwordField)
                             .addComponent(fullNameText, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
                             .addComponent(emailText))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(editNameBtn)
                     .addComponent(passwordEditBtn))
@@ -123,7 +133,11 @@ public class Profile extends javax.swing.JInternalFrame {
                     .addComponent(jLabel4)
                     .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(passwordEditBtn))
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(balanceText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(72, Short.MAX_VALUE))
         );
 
         pack();
@@ -186,6 +200,7 @@ public class Profile extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField balanceText;
     private javax.swing.JButton editNameBtn;
     private javax.swing.JTextField emailText;
     private javax.swing.JTextField fullNameText;
@@ -193,6 +208,7 @@ public class Profile extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JButton passwordEditBtn;
     private javax.swing.JPasswordField passwordField;
     // End of variables declaration//GEN-END:variables
