@@ -6,7 +6,9 @@ package GUI01.Project;
 
 import GUI01.Project.Authentication.Login;
 import GUI01.Project.Authentication.Register;
+import GUI01.Project.Dashboard.Profile;
 import GUI01.Project.Dashboard.UserBalanceHistories;
+import GUI01.Project.Database.Database;
 
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -63,6 +65,7 @@ public class Main extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         myGamesItem = new javax.swing.JMenuItem();
         balanceHistoryItem = new javax.swing.JMenuItem();
+        profileMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         loginForm = new javax.swing.JMenuItem();
         registerMenu = new javax.swing.JMenuItem();
@@ -142,6 +145,14 @@ public class Main extends javax.swing.JFrame {
             }
         });
         jMenu1.add(balanceHistoryItem);
+
+        profileMenuItem.setText("Profile");
+        profileMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                profileMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(profileMenuItem);
 
         jMenuBar1.add(jMenu1);
 
@@ -312,6 +323,17 @@ public class Main extends javax.swing.JFrame {
         ubl.setVisible(true);
     }//GEN-LAST:event_balanceHistoryItemActionPerformed
 
+    private void profileMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_profileMenuItemActionPerformed
+        if(authenticatedUser == null) {
+            Alert.showMessageError(this, "You have to login to show profile");
+            return;
+        }
+        Profile profile = new Profile();
+        JLayeredPane pane = getLayeredPane();
+        pane.add(profile);
+        profile.setVisible(true);
+    }//GEN-LAST:event_profileMenuItemActionPerformed
+
     public void loadGame() {
         listGamePane.setLayout(new GridLayout(0, 3, 3, 3));
         Optional<List<GameObject>> fetchGames = Database.getGames();
@@ -427,6 +449,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JMenuItem logoutMenu;
     private javax.swing.JMenuItem myGamesItem;
     private javax.swing.JComboBox<String> paymentBox;
+    private javax.swing.JMenuItem profileMenuItem;
     private javax.swing.JPanel purchasedGamePane;
     private javax.swing.JMenuItem registerMenu;
     // End of variables declaration//GEN-END:variables

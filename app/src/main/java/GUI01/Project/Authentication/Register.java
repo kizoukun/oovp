@@ -5,7 +5,7 @@
 package GUI01.Project.Authentication;
 
 import GUI01.Project.Alert;
-import GUI01.Project.Database;
+import GUI01.Project.Database.Database;
 import GUI01.Project.Utils;
 import java.beans.PropertyVetoException;
 import java.sql.SQLException;

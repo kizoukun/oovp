@@ -1,6 +1,7 @@
 package GUI01.Project.Authentication;
 
 import GUI01.Project.*;
+import GUI01.Project.Database.Database;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.text.html.Option;
 
 /**
  *

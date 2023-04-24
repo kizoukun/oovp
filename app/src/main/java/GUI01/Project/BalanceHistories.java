@@ -4,6 +4,8 @@
  */
 package GUI01.Project;
 
+import GUI01.Project.Database.Database;
+
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
