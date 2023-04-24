@@ -15,7 +15,7 @@ public class GamesDatabase extends Database {
     public Optional<List<UserGamesObject>> getOwnedGames(int user_id) {
         try(Connection db = this.getConn()) {
             if(db == null) {
-                return Optional.ofNullable(null);
+                return Optional.empty();
             }
             //select query from games table
             try (PreparedStatement ps = db.prepareStatement("SELECT owned_games.purchase_date, games.* FROM `owned_games` JOIN games ON games.id = owned_games.game_id WHERE owned_games.user_id = ? ORDER BY owned_games.purchase_date DESC")) {
@@ -40,7 +40,7 @@ public class GamesDatabase extends Database {
             }
         } catch(SQLException err) {
             Utils.debugLog(err.getMessage());
-            return Optional.ofNullable(null);
+            return Optional.empty();
         }
     }
 
@@ -77,7 +77,7 @@ public class GamesDatabase extends Database {
     public Optional<List<GameObject>> getGames() {
         try(Connection db = this.getConn()) {
             if(db == null) {
-                return Optional.ofNullable(null);
+                return Optional.empty();
             }
             //select query from games table
             try (Statement stmt = db.createStatement()) {
@@ -100,7 +100,7 @@ public class GamesDatabase extends Database {
             }
         } catch(SQLException err) {
             Utils.debugLog(err.getMessage());
-            return Optional.ofNullable(null);
+            return Optional.empty();
         }
     }
 }

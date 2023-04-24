@@ -71,6 +71,7 @@ public class UsersDatabase extends Database {
             ResultSet rs = stmt.executeQuery("SELECT * FROM users");
             return rs;
         } catch (SQLException e) {
+            Utils.debugLog(e.getMessage());
             return null;
         } finally {
             try {
