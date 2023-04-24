@@ -9,6 +9,8 @@ import GUI01.Project.Authentication.Register;
 import GUI01.Project.Dashboard.Profile;
 import GUI01.Project.Dashboard.UserBalanceHistories;
 import GUI01.Project.Database.Database;
+import GUI01.Project.Database.GamesDatabase;
+import GUI01.Project.Database.UsersDatabase;
 
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -37,12 +39,13 @@ public class Main extends javax.swing.JFrame {
 
     public static User authenticatedUser = null;
     public static boolean DEBUG = true;
+    public static UsersDatabase usersDb;
+    public static GamesDatabase gamesDb;
 
     /**
      * Creates new form Main
      */
     public Main() {
-        
         initComponents();
         this.loadGame();
     }
@@ -245,7 +248,7 @@ public class Main extends javax.swing.JFrame {
         int i = 0;
         for(GameObject game : checkOutList) {
             try {
-                Database.addOwnedGame(authenticatedUser.getId(), game.getId());
+                gamesDb.addOwnedGame(authenticatedUser.getId(), game.getId());
                 if(i >= checkOutList.size() - 1) {
                     gamesTitles.append(game.getTitle());
                 } else {
@@ -336,7 +339,7 @@ public class Main extends javax.swing.JFrame {
 
     public void loadGame() {
         listGamePane.setLayout(new GridLayout(0, 3, 3, 3));
-        Optional<List<GameObject>> fetchGames = Database.getGames();
+        Optional<List<GameObject>> fetchGames = gamesDb.getGames();
         List<GameObject> games = new ArrayList<>();
         if(fetchGames.isPresent()) {
             games = fetchGames.get();
@@ -427,7 +430,8 @@ public class Main extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        usersDb = new UsersDatabase();
+        gamesDb = new GamesDatabase();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

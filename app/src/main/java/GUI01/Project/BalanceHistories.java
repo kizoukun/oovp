@@ -4,8 +4,6 @@
  */
 package GUI01.Project;
 
-import GUI01.Project.Database.Database;
-
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +35,7 @@ public class BalanceHistories {
         double balance_before = this.getBalance();
         double balance_after = balance_before + amount;
         try {
-            Database.insertBalanceHistory(this.userId, 1, amount, balance_after, balance_before, description);
+            Main.usersDb.insertBalanceHistory(this.userId, 1, amount, balance_after, balance_before, description);
         } catch (SQLException e) {
             Utils.debugLog(e.getMessage());
         }
@@ -52,7 +50,7 @@ public class BalanceHistories {
             return;
         }
         try {
-            Database.insertBalanceHistory(this.userId, 0, amount, balance_after, balance_before, description);
+            Main.usersDb.insertBalanceHistory(this.userId, 0, amount, balance_after, balance_before, description);
         } catch (SQLException e) {
             Utils.debugLog(e.getMessage());
         }

@@ -114,7 +114,7 @@ public class Login extends javax.swing.JInternalFrame {
             }
         }
         
-        Optional<User> user = Database.getUser(email);
+        Optional<User> user = Main.usersDb.getUser(email);
         if(!user.isPresent()) {
             Alert.showMessageError(this, "Invalid user credentials");
             return;
@@ -128,7 +128,7 @@ public class Login extends javax.swing.JInternalFrame {
         
         JOptionPane.showConfirmDialog(this, "Successfully login", "Success", JOptionPane.OK_OPTION);
         Main.authenticatedUser = user.get();
-        Optional<List<GameObject>> userGames = Database.getOwnedGames(user.get().getId());
+        Optional<List<GameObject>> userGames = Main.gamesDb.getOwnedGames(user.get().getId());
         userGames.ifPresent(gameObjects -> Main.authenticatedUser.setGames(gameObjects));
         try {
             this.setClosed(true);

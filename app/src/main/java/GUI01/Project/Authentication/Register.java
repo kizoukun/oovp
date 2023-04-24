@@ -5,7 +5,7 @@
 package GUI01.Project.Authentication;
 
 import GUI01.Project.Alert;
-import GUI01.Project.Database.Database;
+import GUI01.Project.Main;
 import GUI01.Project.Utils;
 import java.beans.PropertyVetoException;
 import java.sql.SQLException;
@@ -171,14 +171,14 @@ public class Register extends javax.swing.JInternalFrame {
             return;
         }
         
-        if(Database.isUserExists(email)){
+        if(Main.usersDb.isUserExists(email)){
             Alert.showMessageError(this, "User with this email already exists");
             return;
         }
         String hashedPassword = Utils.encryptPassword(password);
         
         try {
-            Database.createUser(email, firstName, lastName, hashedPassword, gender);
+            Main.usersDb.createUser(email, firstName, lastName, hashedPassword, gender);
             JOptionPane.showConfirmDialog(this, "Successfully created user!", "Success", JOptionPane.OK_OPTION);
             try {
                 this.setClosed(true);

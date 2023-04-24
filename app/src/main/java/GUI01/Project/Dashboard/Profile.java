@@ -5,7 +5,7 @@
 package GUI01.Project.Dashboard;
 
 import GUI01.Project.Alert;
-import GUI01.Project.Database.UserDatabase;
+import GUI01.Project.Database.UsersDatabase;
 import GUI01.Project.Main;
 import GUI01.Project.User;
 
@@ -142,7 +142,7 @@ public class Profile extends javax.swing.JInternalFrame {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         this.fullNameText.setText(user.getFullName());
-        new UserDatabase().updateFullName(user.getFirstName(), user.getLastName());
+        new UsersDatabase().updateFullName(user.getFirstName(), user.getLastName());
         Alert.showMessageSuccess(this, "Your new full name is: " + user.getFullName());
     }//GEN-LAST:event_editNameBtnActionPerformed
 
