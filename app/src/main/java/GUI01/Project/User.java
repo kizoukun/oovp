@@ -68,6 +68,11 @@ public class User extends BalanceHistories {
         return this.hashedPassword;
     }
 
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
+        Main.usersDb.updatePassword(hashedPassword);
+    }
+
     public void setGames(List<GameObject> games) {
         this.games = games;
     }

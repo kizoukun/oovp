@@ -8,8 +8,10 @@ import GUI01.Project.Alert;
 import GUI01.Project.Database.UsersDatabase;
 import GUI01.Project.Main;
 import GUI01.Project.User;
+import GUI01.Project.Utils;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  *
@@ -130,11 +132,13 @@ public class Profile extends javax.swing.JInternalFrame {
     private void editNameBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editNameBtnActionPerformed
         User user = Main.authenticatedUser;
         String firstName = JOptionPane.showInputDialog("Enter your new First Name", user.getFirstName());
+        if(firstName == null) return;
         if(firstName.length() < 1) {
             Alert.showMessageError(this, "First Name cannot be empty");
             return;
         }
         String lastName = JOptionPane.showInputDialog("Enter your new Last Name", user.getLastName());
+        if(lastName == null) return;
         if(lastName.length() < 1) {
             Alert.showMessageError(this, "Last Name cannot be empty");
             return;
@@ -142,11 +146,42 @@ public class Profile extends javax.swing.JInternalFrame {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         this.fullNameText.setText(user.getFullName());
-        new UsersDatabase().updateFullName(user.getFirstName(), user.getLastName());
+        Main.usersDb.updateFullName(user.getFirstName(), user.getLastName());
         Alert.showMessageSuccess(this, "Your new full name is: " + user.getFullName());
     }//GEN-LAST:event_editNameBtnActionPerformed
 
     private void passwordEditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordEditBtnActionPerformed
+        User user = Main.authenticatedUser;
+        JPasswordField currentPasswordField = new JPasswordField();
+        int resultCp = JOptionPane.showConfirmDialog(null, currentPasswordField, "Enter your current password", JOptionPane.OK_CANCEL_OPTION);
+        if (resultCp != JOptionPane.OK_OPTION) return;
+        String currentPassword = new String(currentPasswordField.getPassword());
+        if(!Utils.checkPassword(currentPassword, user.getHashedPassword())){
+            Alert.showMessageError(this, "Incorrect password");
+            return;
+        }
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(2, 2));
+
+        JLabel label1 = new JLabel("New Password:");
+        JPasswordField input1 = new JPasswordField();
+        panel.add(label1);
+        panel.add(input1);
+
+        JLabel label2 = new JLabel("Confirm Password:");
+        JPasswordField input2 = new JPasswordField();
+        panel.add(label2);
+        panel.add(input2);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "New Password", JOptionPane.OK_CANCEL_OPTION);
+        if (result != JOptionPane.OK_OPTION) return;
+        String newPassword = new String(input1.getPassword());
+        String confirmPassword = new String(input2.getPassword());
+        if(!newPassword.equals(confirmPassword)) {
+            Alert.showMessageError(this, "Your password is not the same");
+        }
+        user.setHashedPassword(Utils.encryptPassword(newPassword));
+        Alert.showMessageSuccess(this, "Successfully changed your password");
     }//GEN-LAST:event_passwordEditBtnActionPerformed
 
 

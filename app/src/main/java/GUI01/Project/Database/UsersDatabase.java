@@ -28,6 +28,19 @@ public class UsersDatabase extends Database {
         }
     }
 
+    public void updatePassword(String hashedPassword) {
+        String query = "UPDATE users SET password = ? WHERE id = ?";
+        try (Connection db = this.getConn()) {
+            try (PreparedStatement ps = db.prepareStatement(query)) {
+                ps.setString(1, hashedPassword);
+                ps.setInt(2, Main.authenticatedUser.getId());
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            Utils.debugLog(e.getMessage());
+        }
+    }
+
     public void insertBalanceHistory(int user_id, int type, double amount, double balance_after, double balance_before, String description) throws SQLException {
         try (Connection db = this.getConn()) {
             if(db == null) {
