@@ -193,6 +193,7 @@ public class Profile extends javax.swing.JInternalFrame {
         String confirmPassword = new String(input2.getPassword());
         if(!newPassword.equals(confirmPassword)) {
             Alert.showMessageError(this, "Your password is not the same");
+            return;
         }
         user.setHashedPassword(Utils.encryptPassword(newPassword));
         Alert.showMessageSuccess(this, "Successfully changed your password");
