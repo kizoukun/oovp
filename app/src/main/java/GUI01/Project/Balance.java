@@ -38,6 +38,26 @@ public class Balance {
         return this.date;
     }
 
+    public double getAmount() {
+        return this.amount;
+    }
+
+    public int getType() {
+        return this.type;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public double getBalanceAfter() {
+        return this.balance_after;
+    }
+
+    public double getBalanceBefore() {
+        return this.balance_before;
+    }
+
     public String getDescription() {
         return this.description;
     }

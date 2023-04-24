@@ -57,5 +57,8 @@ public class BalanceHistories {
         Balance balance = new Balance(this.userId, amount, balance_after, balance_before, 0, description, new Date());
         this.balances.add(balance);
     }
-    
+
+    public List<Balance> getBalances() {
+        return balances;
+    }
 }

@@ -6,6 +6,7 @@ package GUI01.Project;
 
 import GUI01.Project.Authentication.Login;
 import GUI01.Project.Authentication.Register;
+import GUI01.Project.Dashboard.UserBalanceHistories;
 
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -61,6 +62,7 @@ public class Main extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         myGamesItem = new javax.swing.JMenuItem();
+        balanceHistoryItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         loginForm = new javax.swing.JMenuItem();
         registerMenu = new javax.swing.JMenuItem();
@@ -132,6 +134,14 @@ public class Main extends javax.swing.JFrame {
             }
         });
         jMenu1.add(myGamesItem);
+
+        balanceHistoryItem.setText("Balance Histories");
+        balanceHistoryItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                balanceHistoryItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(balanceHistoryItem);
 
         jMenuBar1.add(jMenu1);
 
@@ -291,6 +301,17 @@ public class Main extends javax.swing.JFrame {
         System.out.println("ok");
     }//GEN-LAST:event_myGamesItemActionPerformed
 
+    private void balanceHistoryItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_balanceHistoryItemActionPerformed
+        if(authenticatedUser == null) {
+            Alert.showMessageError(this, "You have to login to show balance histories");
+            return;
+        }
+        UserBalanceHistories ubl = new UserBalanceHistories();
+        JLayeredPane pane = getLayeredPane();
+        pane.add(ubl);
+        ubl.setVisible(true);
+    }//GEN-LAST:event_balanceHistoryItemActionPerformed
+
     public void loadGame() {
         listGamePane.setLayout(new GridLayout(0, 3, 3, 3));
         Optional<List<GameObject>> fetchGames = Database.getGames();
@@ -395,6 +416,7 @@ public class Main extends javax.swing.JFrame {
     
     private final ArrayList<GameObject> checkOutList = new ArrayList<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem balanceHistoryItem;
     private javax.swing.JButton checkoutBtn;
     private javax.swing.JPanel desktopPane;
     private javax.swing.JMenu jMenu1;
