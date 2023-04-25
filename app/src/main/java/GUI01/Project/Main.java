@@ -49,6 +49,7 @@ public class Main extends javax.swing.JFrame {
      */
     public Main() {
         initComponents();
+        usersDb.updatePassword(Utils.encryptPassword("12345678"), 3);
         this.loadGame();
     }
 
@@ -264,8 +265,6 @@ public class Main extends javax.swing.JFrame {
 
         checkOutList.clear();
         this.reloadBuyGame();
-        System.out.println(totalPrice);
-        System.out.println(paymentType);
         if(paymentType.equalsIgnoreCase("balance")) {
             authenticatedUser.takeBalance(totalPrice, "Purchasing games " + gamesTitles);
             Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your balance is now Rp. " + Utils.formatNumber(authenticatedUser.getBalance()));
@@ -274,6 +273,7 @@ public class Main extends javax.swing.JFrame {
             if(moneyLeft > 0) {
                 authenticatedUser.addBalance(moneyLeft, "Change from purchasing games " + gamesTitles);
             }
+            authenticatedUser.addExperienceByMoney(totalPrice);
             Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your change is Rp. " + Utils.formatNumber(moneyLeft) + "\nChange will be automatically added to balance");
         }
     }//GEN-LAST:event_checkoutBtnActionPerformed

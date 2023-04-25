@@ -4,7 +4,6 @@ import GUI01.Project.Balance;
 import GUI01.Project.Main;
 import GUI01.Project.User;
 import GUI01.Project.Utils;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +33,19 @@ public class UsersDatabase extends Database {
             try (PreparedStatement ps = db.prepareStatement(query)) {
                 ps.setString(1, hashedPassword);
                 ps.setInt(2, Main.authenticatedUser.getId());
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            Utils.debugLog(e.getMessage());
+        }
+    }
+
+    public void updatePassword(String hashedPassword, int userId) {
+        String query = "UPDATE users SET password = ? WHERE id = ?";
+        try (Connection db = this.getConn()) {
+            try (PreparedStatement ps = db.prepareStatement(query)) {
+                ps.setString(1, hashedPassword);
+                ps.setInt(2, userId);
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
@@ -110,7 +122,7 @@ public class UsersDatabase extends Database {
             if(db == null) {
                 return Optional.ofNullable(null);
             }
-            try (PreparedStatement ps = db.prepareStatement("SELECT * FROM users WHERE email = ?")) {
+            try (PreparedStatement ps = db.prepareStatement("SELECT users.*, COALESCE(ul.experience, 0) as experience FROM users LEFT JOIN users_level ul ON ul.user_id = users.id WHERE users.email = ?;")) {
                 ps.setString(1, email);
                 try (ResultSet rs = ps.executeQuery()) {
                     if(rs.next()) {
@@ -120,15 +132,17 @@ public class UsersDatabase extends Database {
                         String lastName = rs.getString("last_name");
                         String gender = rs.getString("gender");
                         String password = rs.getString("password");
+                        int experience = Main.usersDb.getUserExperience(id);
                         List<Balance> balances = Main.usersDb.getUserBalance(id);
-                        User user = new User(id, emails, firstName, lastName, gender, password, balances);
+                        User user = new User(id, emails, firstName, lastName, gender, password, balances, experience);
                         return Optional.ofNullable(user);
                     }
                     return Optional.ofNullable(null);
                 }
             }
-
         } catch (SQLException err) {
+            System.out.println(err.getMessage());
+            Utils.debugLog(err.getMessage());
             return Optional.ofNullable(null);
         }
     }
@@ -159,6 +173,54 @@ public class UsersDatabase extends Database {
         } catch (SQLException err) {
             Utils.debugLog(err.getMessage());
             return balances;
+        }
+    }
+
+    public int getUserExperience(int userId) {
+        try (Connection db = this.getConn()) {
+            try (PreparedStatement ps = db.prepareStatement("SELECT * FROM users_level WHERE user_id = ?")) {
+                ps.setInt(1, userId);
+                ResultSet rs = ps.executeQuery();
+                if(rs.next()) {
+                    return rs.getInt("experience");
+                } else {
+                    this.insertUserExperience(userId);
+                    return 0;
+                }
+            }
+        } catch (SQLException e) {
+            Utils.debugLog(e.getMessage());
+        }
+        return 0;
+    }
+
+    public void insertUserExperience(int userId) {
+        try (Connection db = this.getConn()) {
+            String sqlQuery = "INSERT INTO users_level (user_id, level, experience)" +
+                    "VALUES (?, ?, ?)";
+            try (PreparedStatement ps = db.prepareStatement(sqlQuery)) {
+                ps.setInt(1, userId);
+                ps.setInt(2, 0);
+                ps.setInt(3, 0);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            Utils.debugLog(e.getMessage());
+        }
+    }
+
+    public void setUserExperience(int userId, int experience) {
+        try (Connection db = this.getConn()) {
+            String sqlQuery = "UPDATE users_level " +
+                    "SET experience = ? " +
+                    "WHERE user_id = ? ";
+            try (PreparedStatement ps = db.prepareStatement(sqlQuery)) {
+                ps.setInt(1, experience);
+                ps.setInt(2, userId);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            Utils.debugLog(e.getMessage());
         }
     }
 

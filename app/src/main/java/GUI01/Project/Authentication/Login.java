@@ -117,7 +117,6 @@ public class Login extends javax.swing.JInternalFrame {
             Alert.showMessageError(this, "Invalid user credentials");
             return;
         }
-        
         String userHashedPassword = user.get().getHashedPassword();
         if(!Utils.checkPassword(password, userHashedPassword)) {
             Alert.showMessageError(this, "Invalid password credentials");

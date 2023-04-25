@@ -31,6 +31,10 @@ public class BalanceHistories {
         return balance.getBalance();
     }
 
+    public void addToBalanceList(Balance balance) {
+        this.balances.add(balance);
+    }
+
     public void addBalance(double amount, String description) {
         double balance_before = this.getBalance();
         double balance_after = balance_before + amount;

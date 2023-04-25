@@ -6,7 +6,9 @@ package GUI01.Project;
 
 import GUI01.Project.Object.UserGamesObject;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +18,7 @@ import java.util.List;
 public class User extends BalanceHistories {
 
     private final int id;
+    private int experience;
     private String email;
     private String firstName;
     private String lastName;
@@ -23,7 +26,7 @@ public class User extends BalanceHistories {
     private String hashedPassword;
     private List<UserGamesObject> games;
     
-    public User(int id, String email, String firstName, String lastName, String gender, String hashedPassword, List<Balance> balances) {
+    public User(int id, String email, String firstName, String lastName, String gender, String hashedPassword, List<Balance> balances, int experience) {
         super(id, balances);
         this.id = id;
         this.email = email;
@@ -32,6 +35,7 @@ public class User extends BalanceHistories {
         this.gender = gender;
         this.hashedPassword = hashedPassword;
         this.games = new ArrayList<>();
+        this.experience = experience;
     }
 
     public int getId() {
@@ -68,6 +72,29 @@ public class User extends BalanceHistories {
     
     public String getHashedPassword() {
         return this.hashedPassword;
+    }
+
+    public int getExperience() {
+        return this.experience;
+    }
+
+    public int getProgressExperience() {
+        return this.experience - (this.getLevel() * 100);
+    }
+
+    public int getLevel() {
+        return (int) Math.floor(this.experience / 100);
+    }
+
+    public void addExperience(int experience) {
+        int newExperience = this.experience + experience;
+        this.experience = newExperience;
+        Main.usersDb.setUserExperience(this.getId(), newExperience);
+    }
+
+    public void addExperienceByMoney(double money) {
+        int experience = (int) Math.floor(money / 1000);
+        this.addExperience(experience);
     }
 
     public void setHashedPassword(String hashedPassword) {

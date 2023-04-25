@@ -25,6 +25,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="jLabel6" max="32767" attributes="0"/>
                   <Component id="jLabel5" max="32767" attributes="0"/>
                   <Component id="jLabel4" max="32767" attributes="0"/>
                   <Component id="jLabel1" pref="78" max="32767" attributes="0"/>
@@ -37,15 +38,24 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="balanceText" max="32767" attributes="0"/>
-                          <Component id="passwordField" max="32767" attributes="0"/>
-                          <Component id="fullNameText" pref="174" max="32767" attributes="0"/>
-                          <Component id="emailText" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="balanceText" max="32767" attributes="0"/>
+                              <Component id="passwordField" max="32767" attributes="0"/>
+                              <Component id="fullNameText" pref="174" max="32767" attributes="0"/>
+                              <Component id="emailText" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="currentLevel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jProgressBar1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="nextLevel" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="65" max="32767" attributes="0"/>
+              <EmptySpace pref="37" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="editNameBtn" min="-2" max="-2" attributes="0"/>
                   <Component id="passwordEditBtn" min="-2" max="-2" attributes="0"/>
@@ -81,7 +91,16 @@
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="balanceText" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="72" max="32767" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="currentLevel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="nextLevel" max="32767" attributes="0"/>
+                  <Component id="jProgressBar1" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace pref="38" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -149,6 +168,23 @@
     <Component class="javax.swing.JTextField" name="balanceText">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel6">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Level"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JProgressBar" name="jProgressBar1">
+    </Component>
+    <Component class="javax.swing.JLabel" name="currentLevel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="125"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="nextLevel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="125"/>
       </Properties>
     </Component>
   </SubComponents>
