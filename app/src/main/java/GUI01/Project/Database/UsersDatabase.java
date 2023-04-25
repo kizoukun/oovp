@@ -132,7 +132,7 @@ public class UsersDatabase extends Database {
                         String lastName = rs.getString("last_name");
                         String gender = rs.getString("gender");
                         String password = rs.getString("password");
-                        int experience = Main.usersDb.getUserExperience(id);
+                        int experience = rs.getInt("experience") != 0 ? rs.getInt("experience") : Main.usersDb.getUserExperience(id);
                         List<Balance> balances = Main.usersDb.getUserBalance(id);
                         User user = new User(id, emails, firstName, lastName, gender, password, balances, experience);
                         return Optional.ofNullable(user);
