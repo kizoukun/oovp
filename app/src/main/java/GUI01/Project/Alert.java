@@ -16,8 +16,16 @@ public class Alert {
     public static void showMessageError(Component parentComponent, String msg) {
         JOptionPane.showMessageDialog(parentComponent, msg, "Error", JOptionPane.ERROR_MESSAGE);
     }
+
+    public static void showMessageError(String msg) {
+        JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
+    }
     
     public static void showMessageSuccess(Component parentComponent, String msg) {
         JOptionPane.showMessageDialog(parentComponent, msg, "Success", JOptionPane.PLAIN_MESSAGE);
+    }
+
+    public static void showMessageSuccess(String msg) {
+        JOptionPane.showMessageDialog(null, msg, "Success", JOptionPane.PLAIN_MESSAGE);
     }
 }

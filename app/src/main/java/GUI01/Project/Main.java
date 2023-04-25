@@ -4,16 +4,15 @@
  */
 package GUI01.Project;
 
+import GUI01.Project.Admin.GamesInternalFrame;
 import GUI01.Project.Authentication.Login;
 import GUI01.Project.Authentication.Register;
 import GUI01.Project.Dashboard.Profile;
 import GUI01.Project.Dashboard.UserBalanceHistories;
 import GUI01.Project.Dashboard.UserGames;
-import GUI01.Project.Database.Database;
 import GUI01.Project.Database.GamesDatabase;
 import GUI01.Project.Database.UsersDatabase;
 import GUI01.Project.Object.UserGamesObject;
-
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -43,13 +42,20 @@ public class Main extends javax.swing.JFrame {
     public static boolean DEBUG = true;
     public static UsersDatabase usersDb;
     public static GamesDatabase gamesDb;
+    public static Main mainStatic;
 
     /**
      * Creates new form Main
      */
     public Main() {
         initComponents();
+        mainStatic = this;
+        setAdminMenu(false);
         this.loadGame();
+    }
+
+    public static void setAdminMenu(boolean bool) {
+        mainStatic.jMenu3.setVisible(bool);
     }
 
     /**
@@ -75,6 +81,8 @@ public class Main extends javax.swing.JFrame {
         loginForm = new javax.swing.JMenuItem();
         registerMenu = new javax.swing.JMenuItem();
         logoutMenu = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        gameMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Yuel Game Store");
@@ -189,6 +197,18 @@ public class Main extends javax.swing.JFrame {
         jMenu2.add(logoutMenu);
 
         jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Admin");
+
+        gameMenuItem.setText("Games");
+        gameMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gameMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu3.add(gameMenuItem);
+
+        jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
 
@@ -345,7 +365,19 @@ public class Main extends javax.swing.JFrame {
         profile.setVisible(true);
     }//GEN-LAST:event_profileMenuItemActionPerformed
 
+    private void gameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gameMenuItemActionPerformed
+        if(!authenticatedUser.isAdmin()) {
+            Alert.showMessageError(this, "Unauthorized");
+            return;
+        }
+        GamesInternalFrame gamesInternalFrame = new GamesInternalFrame();
+        JLayeredPane pane = getLayeredPane();
+        pane.add(gamesInternalFrame);
+        gamesInternalFrame.setVisible(true);
+    }//GEN-LAST:event_gameMenuItemActionPerformed
+
     public void loadGame() {
+        listGamePane.removeAll();
         listGamePane.setLayout(new GridLayout(0, 3, 3, 3));
         Optional<List<GameObject>> fetchGames = gamesDb.getGames();
         List<GameObject> games = new ArrayList<>();
@@ -369,7 +401,7 @@ public class Main extends javax.swing.JFrame {
             listGamePane.add(gameBtn);
         }
     }
-    
+
     public void addGame(GameObject game) {
         if(authenticatedUser == null) {
             Alert.showMessageError(this, "You have to login to add cart");
@@ -453,8 +485,10 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JMenuItem balanceHistoryItem;
     private javax.swing.JButton checkoutBtn;
     private javax.swing.JPanel desktopPane;
+    private javax.swing.JMenuItem gameMenuItem;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel listGamePane;
     private javax.swing.JMenuItem loginForm;

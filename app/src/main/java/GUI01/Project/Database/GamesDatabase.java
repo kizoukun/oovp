@@ -103,4 +103,33 @@ public class GamesDatabase extends Database {
             return Optional.empty();
         }
     }
+
+    public void deleteGame(int id) throws SQLException {
+        try (Connection db = this.getConn()) {
+            if(db == null) {
+                Utils.debugLog("Failed to delete game DB Error.");
+                return;
+            }
+            try (PreparedStatement ps = db.prepareStatement("DELETE FROM games WHERE id = ?")) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+        }
+    }
+
+    public void editGame(int id, String title, String image, double price) throws SQLException {
+        try (Connection db = this.getConn()) {
+            if(db == null) {
+                Utils.debugLog("Failed to edit game DB Error.");
+                return;
+            }
+            try (PreparedStatement ps = db.prepareStatement("UPDATE games SET title = ?, image_uri = ?, price = ? WHERE id = ?")) {
+                ps.setString(1, title);
+                ps.setString(2, image);
+                ps.setDouble(3, price);
+                ps.setInt(4, id);
+                ps.executeUpdate();
+            }
+        }
+    }
 }

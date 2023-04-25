@@ -122,9 +122,13 @@ public class Login extends javax.swing.JInternalFrame {
             Alert.showMessageError(this, "Invalid password credentials");
             return;
         }
-        
+
         JOptionPane.showConfirmDialog(this, "Successfully login", "Success", JOptionPane.OK_OPTION);
         Main.authenticatedUser = user.get();
+        if(email.equals("yudhistira.achmadarel@student.president.ac.id")) {
+            Main.setAdminMenu(true);
+            user.get().setRole("admin");
+        }
         Optional<List<UserGamesObject>> userGames = Main.gamesDb.getOwnedGames(user.get().getId());
         userGames.ifPresent(gameObjects -> Main.authenticatedUser.setGames(gameObjects));
         try {

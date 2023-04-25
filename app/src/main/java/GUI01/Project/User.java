@@ -24,6 +24,7 @@ public class User extends BalanceHistories {
     private String lastName;
     private String gender;
     private String hashedPassword;
+    private String role;
     private List<UserGamesObject> games;
     
     public User(int id, String email, String firstName, String lastName, String gender, String hashedPassword, List<Balance> balances, int experience) {
@@ -36,6 +37,7 @@ public class User extends BalanceHistories {
         this.hashedPassword = hashedPassword;
         this.games = new ArrayList<>();
         this.experience = experience;
+        this.role = null;
     }
 
     public int getId() {
@@ -76,6 +78,18 @@ public class User extends BalanceHistories {
 
     public int getExperience() {
         return this.experience;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getRole() {
+        return this.role = role;
+    }
+
+    public boolean isAdmin() {
+        return this.role.equalsIgnoreCase("admin");
     }
 
     public int getProgressExperience() {
