@@ -56,6 +56,7 @@ public class UserBalanceHistories extends javax.swing.JInternalFrame {
         ublTable = new javax.swing.JTable();
 
         setClosable(true);
+        setResizable(true);
 
         ublTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
