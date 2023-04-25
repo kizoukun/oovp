@@ -78,6 +78,7 @@ public class Main extends javax.swing.JFrame {
         logoutMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Yuel Game Store");
 
         checkoutBtn.setText("Checkout");
         checkoutBtn.addActionListener(new java.awt.event.ActionListener() {
