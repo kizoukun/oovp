@@ -49,7 +49,6 @@ public class Main extends javax.swing.JFrame {
      */
     public Main() {
         initComponents();
-        usersDb.updatePassword(Utils.encryptPassword("12345678"), 3);
         this.loadGame();
     }
 
