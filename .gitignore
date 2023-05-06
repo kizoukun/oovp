@@ -7,3 +7,5 @@ build
 .idea
 
 *.xml
+
+app.src.main.java.GUI01.Project.Api.*

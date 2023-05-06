@@ -5,14 +5,20 @@
 package GUI01.Project;
 
 import GUI01.Project.Admin.GamesInternalFrame;
+import GUI01.Project.Api.Tripay;
 import GUI01.Project.Authentication.Login;
 import GUI01.Project.Authentication.Register;
 import GUI01.Project.Dashboard.Profile;
 import GUI01.Project.Dashboard.UserBalanceHistories;
 import GUI01.Project.Dashboard.UserGames;
 import GUI01.Project.Database.GamesDatabase;
+import GUI01.Project.Database.TransactionsDatabase;
 import GUI01.Project.Database.UsersDatabase;
+import GUI01.Project.Object.Transactions;
 import GUI01.Project.Object.UserGamesObject;
+import com.formdev.flatlaf.FlatLightLaf;
+import org.json.JSONObject;
+
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -42,6 +48,7 @@ public class Main extends javax.swing.JFrame {
     public static boolean DEBUG = true;
     public static UsersDatabase usersDb;
     public static GamesDatabase gamesDb;
+    public static TransactionsDatabase transactionsDb;
     public static Main mainStatic;
 
     /**
@@ -102,7 +109,7 @@ public class Main extends javax.swing.JFrame {
         );
         listGamePaneLayout.setVerticalGroup(
             listGamePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 69, Short.MAX_VALUE)
         );
 
         purchasedGamePane.setLayout(new java.awt.GridLayout(1, 0));
@@ -121,7 +128,7 @@ public class Main extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, desktopPaneLayout.createSequentialGroup()
                 .addGap(27, 27, 27)
                 .addComponent(listGamePane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
                 .addGroup(desktopPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(paymentBox, 0, 116, Short.MAX_VALUE)
                     .addComponent(checkoutBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
@@ -131,15 +138,18 @@ public class Main extends javax.swing.JFrame {
         desktopPaneLayout.setVerticalGroup(
             desktopPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(desktopPaneLayout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(desktopPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(purchasedGamePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
-                    .addComponent(listGamePane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(desktopPaneLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(purchasedGamePane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(188, 188, 188))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, desktopPaneLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(listGamePane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(171, 171, 171)))
                 .addComponent(paymentBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14)
-                .addComponent(checkoutBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(180, 180, 180))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(checkoutBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jMenu1.setText("Menu");
@@ -225,8 +235,8 @@ public class Main extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(desktopPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(169, Short.MAX_VALUE))
         );
 
         pack();
@@ -255,9 +265,24 @@ public class Main extends javax.swing.JFrame {
         if(paymentType.equalsIgnoreCase("cash")) {
             Optional<String> moneyInput = Optional.ofNullable(JOptionPane.showInputDialog(this, "Place your money here", "Cash", JOptionPane.INFORMATION_MESSAGE));
             String moneyString = moneyInput.filter(s -> s.length() > 0).orElse("0");
-            money = Double.parseDouble(moneyString);
+            try {
+                money = Double.parseDouble(moneyString);
+            } catch (NumberFormatException e) {
+                Alert.showMessageError(this, "Please input a valid number!");
+                return;
+            }
         } else if(paymentType.equalsIgnoreCase("balance")) {
             money = authenticatedUser.getBalance();
+        } else if (paymentType.equalsIgnoreCase("qris")) {
+            try {
+                Tripay.createTransaction((int) totalPrice,paymentType, authenticatedUser.getEmail(), authenticatedUser.getFullName());
+            } catch (Exception e) {
+                Utils.debugLog(e.getMessage());
+                Alert.showMessageError(e.getMessage());
+                return;
+            }
+            Alert.showMessageError("Sorry, qris is not available at this time!");
+            return;
         } else {
             Alert.showMessageError(this, "Selected payment is not available at this time! sorry :(");
             return;
@@ -448,30 +473,10 @@ public class Main extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+        FlatLightLaf.setup();
         usersDb = new UsersDatabase();
         gamesDb = new GamesDatabase();
+        transactionsDb = new TransactionsDatabase();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
