@@ -16,6 +16,7 @@ public class GameObject {
     private String title;
     private String image = null;
     private Date addedDate;
+    private int cartId;
     
     public GameObject(int id, String title, double price) {
         this.id = id;
@@ -66,5 +67,12 @@ public class GameObject {
 
     public Date getAddedDate() {
         return this.addedDate;
+    }
+
+    public void setCartId(int cartId){
+        this.cartId = cartId;
+    }
+    public int getCartId() {
+        return this.cartId;
     }
 }

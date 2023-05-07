@@ -33,7 +33,7 @@ public class UserBalanceHistories extends javax.swing.JInternalFrame {
         model.addColumn("Description");
         for(Balance balance : Main.authenticatedUser.getBalances()) {
             model.addRow(new Object[]{
-                balance.getDate(),
+                Utils.formatDate(balance.getDate()),
                 Utils.formatNumber(balance.getBalanceBefore()),
                 Utils.formatNumber(balance.getBalanceAfter()),
                 (balance.getType() == 1 ? "+" : "-") + Utils.formatNumber(balance.getAmount()),

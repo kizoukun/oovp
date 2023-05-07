@@ -163,7 +163,7 @@ public class UsersDatabase extends Database {
                         double balance_after = rs.getDouble("balance_after");
                         double balance_before = rs.getDouble("balance_before");
                         String description = rs.getString("description");
-                        Date date = rs.getDate("created_at");
+                        Date date = new Date(rs.getTimestamp("created_at").getTime());
                         Balance balance = new Balance(id, amount, balance_after, balance_before, type, description, date);
                         balances.add(balance);
                     }

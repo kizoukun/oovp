@@ -74,6 +74,35 @@ public class GamesDatabase extends Database {
         }
     }
 
+    public Optional<GameObject> getGame(int id) {
+        try(Connection db = this.getConn()) {
+            if(db == null) {
+                return Optional.empty();
+            }
+            //select query from games table
+            try (PreparedStatement ps = db.prepareStatement("SELECT * FROM games WHERE id = ?")) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if(rs.next()) {
+                        String title = rs.getString("title");
+                        String image = rs.getString("image_uri");
+                        double price = rs.getDouble("price");
+                        Date date = rs.getDate("added_date");
+                        GameObject game = new GameObject(id, title, price, date);
+                        if(image != null) {
+                            game.setImage(image);
+                        }
+                        return Optional.of(game);
+                    }
+                    return Optional.empty();
+                }
+            }
+        } catch(SQLException err) {
+            Utils.debugLog(err.getMessage());
+            return Optional.empty();
+        }
+    }
+
     public Optional<List<GameObject>> getGames() {
         try(Connection db = this.getConn()) {
             if(db == null) {

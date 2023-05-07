@@ -4,29 +4,21 @@
  */
 package GUI01.Project;
 
-import GUI01.Project.Admin.GamesInternalFrame;
+import GUI01.Project.Admin.Admins;
+import GUI01.Project.Api.Account;
 import GUI01.Project.Api.Tripay;
 import GUI01.Project.Authentication.Login;
 import GUI01.Project.Authentication.Register;
-import GUI01.Project.Dashboard.Profile;
-import GUI01.Project.Dashboard.UserBalanceHistories;
-import GUI01.Project.Dashboard.UserGames;
-import GUI01.Project.Database.GamesDatabase;
-import GUI01.Project.Database.TransactionsDatabase;
-import GUI01.Project.Database.UsersDatabase;
-import GUI01.Project.Object.Transactions;
+import GUI01.Project.Dashboard.*;
+import GUI01.Project.Database.*;
 import GUI01.Project.Object.UserGamesObject;
 import com.formdev.flatlaf.FlatLightLaf;
 import org.json.JSONObject;
-
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -49,6 +41,8 @@ public class Main extends javax.swing.JFrame {
     public static UsersDatabase usersDb;
     public static GamesDatabase gamesDb;
     public static TransactionsDatabase transactionsDb;
+    public static CartsDatabase cartsDb;
+    public static PurchaseDatabase purchaseDb;
     public static Main mainStatic;
 
     /**
@@ -56,13 +50,16 @@ public class Main extends javax.swing.JFrame {
      */
     public Main() {
         initComponents();
+        myGamesItem.setVisible(false);
+
         mainStatic = this;
         setAdminMenu(false);
         this.loadGame();
+
     }
 
     public static void setAdminMenu(boolean bool) {
-        mainStatic.jMenu3.setVisible(bool);
+        mainStatic.adminMenus.setVisible(bool);
     }
 
     /**
@@ -83,13 +80,14 @@ public class Main extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         myGamesItem = new javax.swing.JMenuItem();
         balanceHistoryItem = new javax.swing.JMenuItem();
+        purchaseHistoryMenuItem = new javax.swing.JMenuItem();
+        transactionMenuItem = new javax.swing.JMenuItem();
         profileMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         loginForm = new javax.swing.JMenuItem();
         registerMenu = new javax.swing.JMenuItem();
         logoutMenu = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
-        gameMenuItem = new javax.swing.JMenuItem();
+        adminMenus = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Yuel Game Store");
@@ -170,6 +168,22 @@ public class Main extends javax.swing.JFrame {
         });
         jMenu1.add(balanceHistoryItem);
 
+        purchaseHistoryMenuItem.setText("Purchase Histories");
+        purchaseHistoryMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                purchaseHistoryMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(purchaseHistoryMenuItem);
+
+        transactionMenuItem.setText("Transactions");
+        transactionMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                transactionMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(transactionMenuItem);
+
         profileMenuItem.setText("Profile");
         profileMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -208,17 +222,13 @@ public class Main extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
-        jMenu3.setText("Admin");
-
-        gameMenuItem.setText("Games");
-        gameMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                gameMenuItemActionPerformed(evt);
+        adminMenus.setText("Admin");
+        adminMenus.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                adminMenusMouseClicked(evt);
             }
         });
-        jMenu3.add(gameMenuItem);
-
-        jMenuBar1.add(jMenu3);
+        jMenuBar1.add(adminMenus);
 
         setJMenuBar(jMenuBar1);
 
@@ -244,11 +254,12 @@ public class Main extends javax.swing.JFrame {
 
     private void checkoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkoutBtnActionPerformed
         if(authenticatedUser == null) {
-            Alert.showMessageError(this, "Please login first to purchase!");
+
+            Alert.showMessageError("Please login first to purchase!");
             return;
         }
         if(checkOutList.size() < 1) {
-            Alert.showMessageError(this, "Please add game to cart first!");
+            Alert.showMessageError("Please select at least one game to purchase!");
             return;
         }
 
@@ -261,12 +272,25 @@ public class Main extends javax.swing.JFrame {
 
         String paymentType = Objects.requireNonNull(paymentBox.getSelectedItem()).toString();
         double money = 0;
-
+        StringBuffer gamesTitles = new StringBuffer();
+        int i = 0;
+        for(GameObject game : checkOutList) {
+            if(i >= checkOutList.size() - 1) {
+                gamesTitles.append(game.getTitle());
+            } else {
+                gamesTitles.append(game.getTitle() + ", ");
+            }
+            i++;
+        };
         if(paymentType.equalsIgnoreCase("cash")) {
             Optional<String> moneyInput = Optional.ofNullable(JOptionPane.showInputDialog(this, "Place your money here", "Cash", JOptionPane.INFORMATION_MESSAGE));
             String moneyString = moneyInput.filter(s -> s.length() > 0).orElse("0");
             try {
                 money = Double.parseDouble(moneyString);
+                if(money < 1) {
+                    Alert.showMessageError(this, "Please input a valid number!");
+                    return;
+                }
             } catch (NumberFormatException e) {
                 Alert.showMessageError(this, "Please input a valid number!");
                 return;
@@ -275,14 +299,33 @@ public class Main extends javax.swing.JFrame {
             money = authenticatedUser.getBalance();
         } else if (paymentType.equalsIgnoreCase("qris")) {
             try {
-                Tripay.createTransaction((int) totalPrice,paymentType, authenticatedUser.getEmail(), authenticatedUser.getFullName());
+                JSONObject data = Tripay.createTransaction((int) totalPrice,paymentType, authenticatedUser.getEmail(), authenticatedUser.getFullName());
+                int id = transactionsDb.createTransaction((int) totalPrice,
+                        "Purchasing games " + gamesTitles,
+                        paymentType.toUpperCase(),
+                        data.getString("instructions"),
+                        data.getString("reference"),
+                        data.getString("qr_url"),
+                        data.toString(),
+                        data.getLong("expired_time")
+                );
+                if(id == -1) {
+                    Alert.showMessageError("Failed to create transaction using " + paymentType);
+                    return;
+                }
+                for(GameObject game : checkOutList) {
+                    cartsDb.insertCart(id, game.getId());
+                };
+                Payment payment = new Payment(id);
+                JLayeredPane pane = getLayeredPane();
+                pane.add(payment);
+                payment.setVisible(true);
+                return;
             } catch (Exception e) {
                 Utils.debugLog(e.getMessage());
                 Alert.showMessageError(e.getMessage());
                 return;
             }
-            Alert.showMessageError("Sorry, qris is not available at this time!");
-            return;
         } else {
             Alert.showMessageError(this, "Selected payment is not available at this time! sorry :(");
             return;
@@ -291,35 +334,25 @@ public class Main extends javax.swing.JFrame {
             Alert.showMessageError(this, "Your money is not enough!");
             return;
         }
-        StringBuffer gamesTitles = new StringBuffer();
-        int i = 0;
-        for(GameObject game : checkOutList) {
-            try {
-                gamesDb.addOwnedGame(authenticatedUser.getId(), game.getId());
-                if(i >= checkOutList.size() - 1) {
-                    gamesTitles.append(game.getTitle());
-                } else {
-                    gamesTitles.append(game.getTitle() + ", ");
-                }
-                authenticatedUser.addGames(new UserGamesObject(game));
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-            i++;
-        };
-
+        try {
+            sendGames();
+        } catch (Exception e) {
+            Utils.debugLog(e.getMessage());
+            Alert.showMessageError(e.getMessage());
+            return;
+        }
         checkOutList.clear();
         this.reloadBuyGame();
         if(paymentType.equalsIgnoreCase("balance")) {
             authenticatedUser.takeBalance(totalPrice, "Purchasing games " + gamesTitles);
-            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your balance is now Rp. " + Utils.formatNumber(authenticatedUser.getBalance()));
+            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n Check your purchase history!\n\n Your balance is now Rp. " + Utils.formatNumber(authenticatedUser.getBalance()));
         } else {
             double moneyLeft = money - totalPrice;
             if(moneyLeft > 0) {
                 authenticatedUser.addBalance(moneyLeft, "Change from purchasing games " + gamesTitles);
             }
             authenticatedUser.addExperienceByMoney(totalPrice);
-            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n\n Your change is Rp. " + Utils.formatNumber(moneyLeft) + "\nChange will be automatically added to balance");
+            Alert.showMessageSuccess(this, "Congratulation! " + authenticatedUser + "\nYou have successfully purchased the game!\n Check your purchase history!\n\n Your change is Rp. " + Utils.formatNumber(moneyLeft) + "\nChange will be automatically added to balance");
         }
     }//GEN-LAST:event_checkoutBtnActionPerformed
 
@@ -341,6 +374,7 @@ public class Main extends javax.swing.JFrame {
                 return;
             }
             Main.authenticatedUser = null;
+            setAdminMenu(false);
             Alert.showMessageSuccess(this, "Successfully logged out");
         } else {
             Alert.showMessageError(this, "You are not logged in");
@@ -390,16 +424,42 @@ public class Main extends javax.swing.JFrame {
         profile.setVisible(true);
     }//GEN-LAST:event_profileMenuItemActionPerformed
 
-    private void gameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gameMenuItemActionPerformed
-        if(!authenticatedUser.isAdmin()) {
-            Alert.showMessageError(this, "Unauthorized");
+    private void adminMenusMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminMenusMouseClicked
+        if(authenticatedUser == null) {
+            Alert.showMessageError(this, "You have to login to show admin menu");
             return;
         }
-        GamesInternalFrame gamesInternalFrame = new GamesInternalFrame();
+        if(!authenticatedUser.isAdmin()) {
+            Alert.showMessageError(this, "You have to be admin to show admin menu");
+            return;
+        }
+        Admins adminMenu = new Admins();
         JLayeredPane pane = getLayeredPane();
-        pane.add(gamesInternalFrame);
-        gamesInternalFrame.setVisible(true);
-    }//GEN-LAST:event_gameMenuItemActionPerformed
+        pane.add(adminMenu);
+        adminMenu.setVisible(true);
+    }//GEN-LAST:event_adminMenusMouseClicked
+
+    private void purchaseHistoryMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purchaseHistoryMenuItemActionPerformed
+        if(authenticatedUser == null) {
+            Alert.showMessageError(this, "You have to login to purchase history menu");
+            return;
+        }
+        PurchaseHistory purchaseHistory = new PurchaseHistory();
+        JLayeredPane pane = getLayeredPane();
+        pane.add(purchaseHistory);
+        purchaseHistory.setVisible(true);
+    }//GEN-LAST:event_purchaseHistoryMenuItemActionPerformed
+
+    private void transactionMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_transactionMenuItemActionPerformed
+        if(authenticatedUser == null) {
+            Alert.showMessageError(this, "You have to login to show transaction menu");
+            return;
+        }
+        TransactionsDashboard transaction = new TransactionsDashboard();
+        JLayeredPane pane = getLayeredPane();
+        pane.add(transaction);
+        transaction.setVisible(true);
+    }//GEN-LAST:event_transactionMenuItemActionPerformed
 
     public void loadGame() {
         listGamePane.removeAll();
@@ -444,6 +504,45 @@ public class Main extends javax.swing.JFrame {
         }
         this.reloadBuyGame();
     }
+
+    public void sendGames() throws Exception {
+        for(GameObject game : checkOutList) {
+            sendGames(game);
+        }
+    }
+
+    public void sendGames(int gameId) throws Exception {
+        Optional<GameObject> fetchGame = gamesDb.getGame(gameId);
+        if(fetchGame.isPresent()) {
+            GameObject game = fetchGame.get();
+            sendGames(game);
+        }
+    }
+
+    public void sendGames(GameObject game) throws Exception {
+        try {
+            String account = Account.getAccount(game.getId());
+            purchaseDb.insertProductHistory(game.getId(), account);
+        } catch (SQLException e) {
+            Utils.debugLog(e.getMessage());
+        } catch (Exception e) {
+            Utils.debugLog(e.getMessage());
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    public void sendGamesInCart(int transactionId) throws Exception {
+        Optional<List<GameObject>> fetchGames = cartsDb.getCartGames(transactionId);
+        if(fetchGames.isPresent()) {
+            List<GameObject> games = fetchGames.get();
+            for(GameObject game : games) {
+                if(game.getCartId() != 0) {
+                    cartsDb.updateCartsStatusById(game.getCartId());
+                }
+                sendGames(game);
+            }
+        }
+    }
     
     public void removeGame(GameObject game) {
         checkOutList.remove(game);
@@ -477,6 +576,8 @@ public class Main extends javax.swing.JFrame {
         usersDb = new UsersDatabase();
         gamesDb = new GamesDatabase();
         transactionsDb = new TransactionsDatabase();
+        cartsDb = new CartsDatabase();
+        purchaseDb = new PurchaseDatabase();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -487,13 +588,12 @@ public class Main extends javax.swing.JFrame {
     
     private final ArrayList<GameObject> checkOutList = new ArrayList<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu adminMenus;
     private javax.swing.JMenuItem balanceHistoryItem;
     private javax.swing.JButton checkoutBtn;
     private javax.swing.JPanel desktopPane;
-    private javax.swing.JMenuItem gameMenuItem;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel listGamePane;
     private javax.swing.JMenuItem loginForm;
@@ -501,7 +601,9 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JMenuItem myGamesItem;
     private javax.swing.JComboBox<String> paymentBox;
     private javax.swing.JMenuItem profileMenuItem;
+    private javax.swing.JMenuItem purchaseHistoryMenuItem;
     private javax.swing.JPanel purchasedGamePane;
     private javax.swing.JMenuItem registerMenu;
+    private javax.swing.JMenuItem transactionMenuItem;
     // End of variables declaration//GEN-END:variables
 }

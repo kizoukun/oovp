@@ -5,6 +5,9 @@
 package GUI01.Project;
 
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -35,6 +38,10 @@ public class Utils {
         if(Main.DEBUG) {
             System.out.println(message);
         }
+    }
+
+    public static String formatDate(Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
     }
     
 }
